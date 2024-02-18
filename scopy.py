@@ -160,7 +160,6 @@ def main():
     parser.add_argument("--with-etherbone", action="store_true", help="Add EtherBone.")
     parser.add_target_argument("--eth-ip", default="192.168.1.50", help="Etherbone IP address.")
     parser.set_defaults(cpu_type="picorv32")
-    parser.set_defaults(csr_csv="csr.csv")
     parser.set_defaults(cpu_variant="minimal")
     # fmt: on
 
@@ -176,6 +175,7 @@ def main():
     builder = Builder(soc, **parser.builder_argdict)
 
     if args.build:
+        builder.csr_csv="test/csr.csv"
         builder.build(**parser.toolchain_argdict)
 
     if args.load:
