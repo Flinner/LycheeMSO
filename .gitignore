@@ -1,2 +1,6 @@
 /__pycache__/
+/firmware/demo/
+*.bin
+*.fbi
 /build/
+/test/csr.csv

@@ -1,0 +1,1 @@
+-I~/code/verilog/migen/myscope/build/sipeed_tang_primer_20k/software/include

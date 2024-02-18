@@ -9,15 +9,16 @@
 from litex.soc.integration.soc_core import SoCCore
 from litex_boards.platforms import sipeed_tang_primer_20k
 
+
 from litedram.phy import GW2DDRPHY
 from litedram.modules import MT41K64M16
 
 from migen import Signal, ClockDomain
-from litex.gen import LiteXModule, Instance, If
+from litex.gen import LiteXModule, Instance, If, Cat
 from liteeth.phy.rmii import LiteEthPHYRMII
 from litex.soc.integration.builder import Builder
 
-from litex.soc.cores.gpio import GPIOIn
+from litex.soc.cores.gpio import GPIOIn, GPIOOut
 
 
 from litex.soc.cores.clock.gowin_gw2a import GW2APLL
@@ -85,7 +86,7 @@ class BaseSoC(SoCCore):
         # with_video_terminal=False,
         # with_ethernet=False,
         # with_etherbone=False,
-        # eth_ip="192.168.1.50",
+        eth_ip="192.168.1.50",
         # eth_dynamic_ip=False,
         dock="standard",
         **kwargs,
@@ -133,9 +134,14 @@ class BaseSoC(SoCCore):
         # )
 
         # UART -------------------------------------------------------------------------------------
+        # Already built by SoCCore...
 
         # Buttons ----------------------------------------------------------------------------------
-        self.buttons = GPIOIn(pads=~platform.request_all("btn_n"))
+        self.submodules.buttons = GPIOIn(pads=~platform.request_all("btn_n"))
+        self.add_csr("buttons")
+
+        self.submodules.leds = GPIOOut(Cat(*[platform.request("led", i) for i in range(6)]))
+        self.add_csr("leds")
 
 
 # Build --------------------------------------------------------------------------------------------
@@ -154,6 +160,7 @@ def main():
     parser.add_argument("--with-etherbone", action="store_true", help="Add EtherBone.")
     parser.add_target_argument("--eth-ip", default="192.168.1.50", help="Etherbone IP address.")
     parser.set_defaults(cpu_type="picorv32")
+    parser.set_defaults(csr_csv="csr.csv")
     parser.set_defaults(cpu_variant="minimal")
     # fmt: on
 
