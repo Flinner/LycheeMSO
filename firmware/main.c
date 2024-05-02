@@ -158,16 +158,25 @@ static void console_service(void) {
   char *str;
   char *token;
   int pos;
+  int lev;
 
   str = readstr();
 
   /* Channel Number */
   int CHAN;
+  /* Channel Name */
+  char CHAN_Name[10];
 
   if (str == NULL)
     return;
   token = get_token(&str);
-  if (strcmp(token, "help") == 0)
+  if (strcmp(token, "WAV:DATAQ") == 0)
+    for (int i = 0; i < 2000; i++) {
+      printf("%d", i & 0xF);
+      busy_wait(1);
+      printf("\n");
+    }
+  else if (strcmp(token, "help") == 0)
     help();
 
   else if (strcmp(token, "reboot") == 0)
@@ -176,15 +185,47 @@ static void console_service(void) {
   else if (strcmp(token, "*IDN?") == 0)
     printf("SD,SadOscilloscope,0,0.01-0.0-0.0\n");
 
-  else if (sscanf(token, ":CHAN%i:DISP?%n", &CHAN, &pos) == 1 &&
+  else if (sscanf(token, ":ch%i:DISPQ%n", &CHAN, &pos) == 1 &&
            pos == strlen(token))
-    printf("1\n");
+    printf("1\n"); // FIXME: Dynamically send
 
-  else if (strcmp(token, ":TRIG:MODE?") == 0)
-    printf("EDGE\n");
+  else if (sscanf(token, "WAV:SOUR %s%n", CHAN_Name, &pos) == 1 &&
+           pos == strlen(token))
+    ; // FIXME: Select Source!
 
-  else if (strcmp(token, ":TRIG:EDGE:SOUR?") == 0)
-    printf("CHAN1\n");
+  else if (strcmp(token, "WAV:PREQ") == 0)
+    /* printf("%d,%d,%zu,%d,%f,%f,%f,%f,%f,%f\n", */
+    printf("0,2,1000,1,1e-6,-3.e-03,0,1.0,0,0");
+  /* 0,            // unused */
+  /* 0,            // unused */
+  /* (size_t)1000, // npoints, */
+  /* 1             // unused3, */
+  /* 1e-6,         // sec_per_sample, */
+  /* 0.0,          // xorigin, */
+  /* 0.0,          // xreference, */
+  /* 1.0,          // yincrement, */
+  /* 0.0,          // yorigin, */
+  /* 122.0         // yreference); */
+  /* ); // FIXME: Dynamically send */
+
+  else if (strcmp(token, ":TRIG:MODEQ") == 0)
+    printf("EDGE\n"); // FIXME: Dynamically send
+
+  else if (strcmp(token, ":TRIG:STATQ") == 0)
+    printf("RUN\n"); // FIXME: Dynamically send
+
+  else if (strcmp(token, ":TRIG:EDGE:SOURQ") == 0)
+    printf("CHAN1\n"); // FIXME: Dynamically send
+
+  else if (sscanf(token, "TRIG:EDGE:LEV  %d", &lev) == 1) {
+    leds_out_write((int)lev);
+    printf("LEVVV\n");
+
+  } else if (strcmp(token, ":TRIG:EDGE:SLOPEQ") == 0)
+    printf("POS\n"); // FIXME: Dynamically send
+
+  else if (strcmp(token, ":TRIG:EDGE:LEVQ") == 0)
+    printf("0\n"); // FIXME: Dynamically send
 
   else if (strcmp(token, "clear") == 0)
     printf("\e[1;1H\e[2J");

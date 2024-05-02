@@ -34,11 +34,11 @@ def main():
     os.system(f"export BUILD_DIR={build_path} && {'export WITH_CXX=1 &&' if args.with_cxx else ''} cd demo && make")
 
     # Copy demo.bin
-    os.system("cp demo/demo.bin ./")
+    # os.system("cp demo/demo.bin ./")
 
     # Prepare flash boot image.
     python3 = sys.executable or "python3" # Nix specific: Reuse current Python executable if available.
-    os.system(f"{python3} -m litex.soc.software.crcfbigen demo.bin -o demo.fbi --fbi --little") # FIXME: Endianness.
+    os.system(f"{python3} -m litex.soc.software.crcfbigen demo/demo.bin -o demo/demo.fbi --fbi --little") # FIXME: Endianness.
 
 if __name__ == "__main__":
     main()

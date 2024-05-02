@@ -9,6 +9,7 @@
 from litex.soc.integration.soc_core import SoCCore
 from litex_boards.platforms import sipeed_tang_primer_20k
 
+from litex.soc.doc import generate_docs, generate_svd
 
 from litedram.phy import GW2DDRPHY
 from litedram.modules import MT41K64M16
@@ -118,10 +119,10 @@ class BaseSoC(SoCCore):
             l2_cache_size=kwargs.get("l2_size", 8192),
         )
         # SPI Flash --------------------------------------------------------------------------------
-        from litespi.modules import W25Q32JV as SpiFlashModule
-        from litespi.opcodes import SpiNorFlashOpCodes as Codes
+        # from litespi.modules import W25Q32JV as SpiFlashModule
+        # from litespi.opcodes import SpiNorFlashOpCodes as Codes
 
-        self.add_spi_flash(mode="1x", module=SpiFlashModule(Codes.READ_1_1_1))
+        # self.add_spi_flash(mode="1x", module=SpiFlashModule(Codes.READ_1_1_1))
 
         # Ethernet / Etherbone ---------------------------------------------------------------------
         # self.ethphy = LiteEthPHYRMII(
@@ -130,18 +131,36 @@ class BaseSoC(SoCCore):
         #     refclk_cd=None,
         # )
         # self.add_etherbone(
-        #     phy=self.ethphy, ip_address=eth_ip, with_timing_constraints=False
-        # )
+        # phy         = self.ethphy,
+        # ip_address  = "192.168.1.50",
+        # mac_address = 0x10e2d5000001)
+        # self.add_csr("ethphy")
+        # self.add_ethernet(phy=self.ethphy, dynamic_ip=False, with_timing_constraints=False)
+        # self.add_etherbone(phy=self.ethphy, ip_address=eth_ip, with_timing_constraints=False)
+
+        # LiteScope ---------- ---------------------------------------------------------------------
+        from litescope import LiteScopeAnalyzer
+        analyzer_signals = [platform.request("btn_n", 0), platform.request("btn_n", 1)]
+        self.submodules.analyzer = LiteScopeAnalyzer(analyzer_signals,
+            depth        = 512,
+            clock_domain = "sys",
+            samplerate   = sys_clk_freq,
+            csr_csv      = "analyzer.csv"
+        )
 
         # UART -------------------------------------------------------------------------------------
         # Already built by SoCCore...
 
         # Buttons ----------------------------------------------------------------------------------
-        self.submodules.buttons = GPIOIn(pads=~platform.request_all("btn_n"))
-        self.add_csr("buttons")
+        counter = Signal(26)
+        led = platform.request("j1", 32)
+        self.comb += led.eq(counter[25])
+        self.sync += counter.eq(counter + 1)
 
-        self.submodules.leds = GPIOOut(Cat(*[platform.request("led", i) for i in range(6)]))
-        self.add_csr("leds")
+
+
+        # self.submodules.leds = GPIOOut(Cat(*[platform.request("led", i) for i in range(6)]))
+        # self.add_csr("leds")
 
 
 # Build --------------------------------------------------------------------------------------------
@@ -154,6 +173,7 @@ def main():
     )
 
     # fmt: off
+    parser.add_target_argument("--build-doc", action="store_true", help="Build Documentation")
     parser.add_target_argument("--flash", action="store_true", help="Flash Bitstream.")
     parser.add_target_argument("--sys-clk-freq", default=48e6, type=float, help="System clock frequency.")
     parser.add_target_argument("--with-spi-flash", action="store_true", help="Enable SPI Flash (MMAPed).")
@@ -164,6 +184,9 @@ def main():
     # fmt: on
 
     args = parser.parse_args()
+    if args.build_doc and not args.build:
+        print("Use --build with --build-doc")
+        exit(1)
 
     soc = BaseSoC(
         sys_clk_freq=args.sys_clk_freq,
@@ -173,10 +196,15 @@ def main():
         **parser.soc_argdict,
     )
     builder = Builder(soc, **parser.builder_argdict)
-
+    vns = None
     if args.build:
-        builder.csr_csv="test/csr.csv"
-        builder.build(**parser.toolchain_argdict)
+        builder.csr_csv = "test/csr.csv"
+        vns = builder.build(**parser.toolchain_argdict)
+
+    if args.build_doc and args.build:
+        soc.do_exit(vns)
+        generate_docs(soc, "build/documentation")
+        generate_svd(soc, "build/software")
 
     if args.load:
         prog = soc.platform.create_programmer()
