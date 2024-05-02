@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
 #
-# Copyright (c) 2024 Ammar Seliaman <TODO>
+# Copyright (c) 2024 Ammar Seliaman <me@ammar.engineer>
 # Copyright (c) 2022 Icenowy Zheng <icenowy@aosc.io>
 # Copyright (c) 2022 Florent Kermarrec <florent@enjoy-digital.fr>
 # SPDX-License-Identifier: BSD-2-Clause
 
 from litex.soc.integration.soc_core import SoCCore
-from litex_boards.platforms import sipeed_tang_primer_20k
+import LycheeMSO_platform
 
 from litex.soc.doc import generate_docs, generate_svd
 
@@ -92,7 +92,7 @@ class BaseSoC(SoCCore):
         dock="standard",
         **kwargs,
     ):
-        platform = sipeed_tang_primer_20k.Platform(dock, toolchain="gowin")
+        platform = LycheeMSO_platform.Platform(dock, toolchain="gowin")
 
         # CRG --------------------------------------------------------------------------------------
         self.crg = _CRG(platform, sys_clk_freq)
@@ -152,10 +152,6 @@ class BaseSoC(SoCCore):
         # Already built by SoCCore...
 
         # Buttons ----------------------------------------------------------------------------------
-        counter = Signal(26)
-        led = platform.request("j1", 32)
-        self.comb += led.eq(counter[25])
-        self.sync += counter.eq(counter + 1)
 
 
 
@@ -168,8 +164,8 @@ def main():
     from litex.build.parser import LiteXArgumentParser
 
     parser = LiteXArgumentParser(
-        platform=sipeed_tang_primer_20k.Platform,
-        description="LiteX SoC on Tang Primer 20K.",
+        platform=LycheeMSO_platform.Platform,
+        description="LycheeMSO + LiteX SoC on Tang Primer 20K.",
     )
 
     # fmt: off
