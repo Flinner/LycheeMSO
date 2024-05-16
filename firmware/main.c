@@ -218,7 +218,7 @@ static void console_service(void) {
     printf("CHAN1\n"); // FIXME: Dynamically send
 
   else if (sscanf(token, "TRIG:EDGE:LEV  %d", &lev) == 1) {
-    leds_out_write((int)lev);
+    /* leds_out_write((int)lev); */
     printf("LEVVV\n");
 
   } else if (strcmp(token, ":TRIG:EDGE:SLOPEQ") == 0)

@@ -152,10 +152,41 @@ class BaseSoC(SoCCore):
         # Already built by SoCCore...
 
         # Buttons ----------------------------------------------------------------------------------
+        self.comb += [
+            # WARN  (CT1122) : 'fGen0' will be placed to RECONFIGN pin according to constraint, and then the signal may lead to gwCONFIG programming directly
+            # self.platform.request("fGen", 0).eq(0),
+            # self.platform.request("fGen", 1).eq(1),
+            # self.platform.request("fGen", 2).eq(0),
+            # self.platform.request("fGen", 3).eq(0),
+            # self.platform.request("fGen", 4).eq(0),
+            self.platform.request("fGen", 5).eq(0),
+            self.platform.request("fGen", 6).eq(0),
+            self.platform.request("fGen", 7).eq(1),
+            self.platform.request("fGen", 8).eq(0),
+            self.platform.request("fGen", 9).eq(0),
+            self.platform.request("fGen", 10).eq(0),
+
+
+            self.platform.request("logicAnalyzer",2).eq(1), # T7 should be off. It was ON
+            self.platform.request("logicAnalyzer",3).eq(0),
+            self.platform.request("logicAnalyzer",4).eq(0),
+            self.platform.request("logicAnalyzer",5).eq(0),
+            self.platform.request("logicAnalyzer",6).eq(0),
+            self.platform.request("logicAnalyzer",7).eq(0),
+            # self.platform.request("logicAnalyzer",8).eq(0),
+            self.platform.request("logicAnalyzer",9).eq(0),
+            self.platform.request("logicAnalyzer",10).eq(0),
+            self.platform.request("logicAnalyzer",11).eq(0),
+            self.platform.request("logicAnalyzer",12).eq(0),
+            self.platform.request("logicAnalyzer",13).eq(0),
+            self.platform.request("logicAnalyzer",14).eq(0),
+            self.platform.request("logicAnalyzer",15).eq(0),
+        ]
 
 
 
-        # self.submodules.leds = GPIOOut(Cat(*[platform.request("led", i) for i in range(6)]))
+
+        # self.submodules.leds = GPIOOut(Cat(*[platform.request("fGen", i) for i in range(11)]))
         # self.add_csr("leds")
 
 

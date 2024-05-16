@@ -24,6 +24,8 @@ _io = [
     ("serial", 0,
         Subsignal("rx", Pins("T13")), # CARD1:1
         Subsignal("tx", Pins("M11")), # CARD1:11
+        # Subsignal("tx", Pins("A7")), # CARD1:1
+        # Subsignal("rx", Pins("A6")), # CARD1:11
         IOStandard("LVCMOS33")
     ),
 
@@ -135,13 +137,65 @@ _connectors = [
 # Dock IOs -----------------------------------------------------------------------------------------
 
 _dock_io = [
-    # Leds
+    # Function Generator
+    # WARN  (CT1122) : 'fGen0' will be placed to RECONFIGN pin according to constraint, and then the signal may lead to gwCONFIG programming directly
+    # ("fGen", 0,  Pins( "B10"), IOStandard("LVCMOS33")),
+    # ("fGen", 1,  Pins( "A13"), IOStandard("LVCMOS33")), # fpga READY 
+    ("fGen", 2,  Pins( "F15"), IOStandard("LVCMOS33")), 
+    ("fGen", 3,  Pins( "E15"), IOStandard("LVCMOS33")),
+    # ("fGen", 4,  Pins( "C13"), IOStandard("LVCMOS33")), # FPGA DONE
+    ("fGen", 5,  Pins("D16"), IOStandard("LVCMOS33")),
+    ("fGen", 6,  Pins("E14"), IOStandard("LVCMOS33")),
+    ("fGen", 7,  Pins("C9"), IOStandard("LVCMOS33")),
+    ("fGen", 8,  Pins("H14"), IOStandard("LVCMOS33")),
+    ("fGen", 9,  Pins("G16"), IOStandard("LVCMOS33")),
+    ("fGen", 10,  Pins("A9"), IOStandard("LVCMOS33")),
+
+    # Logic Analyzer
+    # ("logicAnalyzer", 0,  Pins( "T13"), IOStandard("LVCMOS33")),
+    # ("logicAnalyzer", 1,  Pins( "T10"), IOStandard("LVCMOS33")),
+    ("logicAnalyzer", 2,  Pins( "T7"), IOStandard("LVCMOS33")),
+    ("logicAnalyzer", 3,  Pins( "R8"), IOStandard("LVCMOS33")),
+    ("logicAnalyzer", 4,  Pins( "M6"), IOStandard("LVCMOS33")),
+    ("logicAnalyzer", 5,  Pins( "P9"), IOStandard("LVCMOS33")),
+    ("logicAnalyzer", 6,  Pins( "T11"), IOStandard("LVCMOS33")),
+    ("logicAnalyzer", 7,  Pins( "T12"), IOStandard("LVCMOS33")),
+    # ("logicAnalyzer", 8,  Pins( "M11"), IOStandard("LVCMOS33")),
+    ("logicAnalyzer", 9,  Pins( "T6"), IOStandard("LVCMOS33")),
+    ("logicAnalyzer", 10,  Pins( "P6"), IOStandard("LVCMOS33")),
+    ("logicAnalyzer", 11,  Pins( "T8"), IOStandard("LVCMOS33")),
+    ("logicAnalyzer", 12,  Pins( "T9"), IOStandard("LVCMOS33")),
+    ("logicAnalyzer", 13,  Pins( "P11"), IOStandard("LVCMOS33")),
+    ("logicAnalyzer", 14,  Pins( "R11"), IOStandard("LVCMOS33")),
+    ("logicAnalyzer", 15,  Pins( "H15"), IOStandard("LVCMOS33")),
+
     ("led", 0,  Pins( "CARD1:44"), IOStandard("LVCMOS18")), # CHECKME: Should be LVCMOS33.
     ("led", 1,  Pins( "CARD1:46"), IOStandard("LVCMOS18")), # CHECKME: Should be LVCMOS33.
     ("led", 3,  Pins( "CARD1:40"), IOStandard("LVCMOS18")), # CHECKME: Should be LVCMOS33.
     ("led", 2,  Pins( "CARD1:42"), IOStandard("LVCMOS18")), # CHECKME: Should be LVCMOS33.
     ("led", 4,  Pins( "CARD1:98"), IOStandard("LVCMOS33")),
     ("led", 5,  Pins("CARD1:136"), IOStandard("LVCMOS33")),
+
+    # Arbitrary Wavefrom Generator
+    ("AWG", 0,
+     Subsignal("data_0", Pins("L12")),
+     Subsignal("data_1", Pins("J11")),
+     Subsignal("data_2", Pins("N6")),
+     Subsignal("data_3", Pins("N7")),
+     Subsignal("data_4", Pins("N9")),
+     Subsignal("data_5", Pins("R9")),
+     Subsignal("data_6", Pins("D11")),
+     Subsignal("data_7", Pins("D10")),
+     Subsignal("data_8", Pins("N8")),
+     Subsignal("data_9", Pins("L9")),
+     Subsignal("data_10", Pins("R7")),
+     Subsignal("data_11", Pins("P7")),
+     Subsignal("data_12", Pins("M7")),
+     Subsignal("data_13", Pins("L8")),
+
+     Subsignal("clk", Pins("E10")),
+     Misc("PULL_MODE=NONE"),
+     ),
 
     # RGB Led.
     ("rgb_led", 0, Pins("CARD1:45"), IOStandard("LVCMOS18")),
@@ -189,84 +243,6 @@ _dock_io = [
         Subsignal("b",     Pins("CARD1:121 CARD1:119 CARD1:115 CARD1:113 CARD1:109")),
         IOStandard("LVCMOS18")
     ),
-
-    # RMII Ethernet
-    ("eth_clocks", 0,
-        Subsignal("ref_clk", Pins("CARD1:148")),
-        IOStandard("LVCMOS33"),
-    ),
-    ("eth", 0,
-        Subsignal("rst_n",   Pins("CARD1:176")),
-        Subsignal("rx_data", Pins("CARD1:132 CARD1:146")),
-        Subsignal("crs_dv",  Pins("CARD1:198")),
-        Subsignal("tx_en",   Pins("CARD1:130")),
-        Subsignal("tx_data", Pins("CARD1:140 CARD1:142")),
-        Subsignal("mdc",     Pins("CARD1:95")),
-        Subsignal("mdio",    Pins("CARD1:97")),
-        Subsignal("rx_er",   Pins("CARD1:200")),
-        #Subsignal("int_n",   Pins("CARD1:")),
-        IOStandard("LVCMOS33")
-     ),
-]
-
-# Dock Lite IOs ------------------------------------------------------------------------------------
-
-_dock_lite_io = [
-    # Buttons.
-    ("btn_n",   0, Pins("CARD1:15"),  IOStandard("LVCMOS33")),
-    ("btn_n",   1, Pins("CARD1:163"), IOStandard("LVCMOS15")),
-
-    # Switches
-    ("user_sw", 0, Pins("CARD1:159"), IOStandard("LVCMOS15")),
-    ("user_sw", 1, Pins("CARD1:157"), IOStandard("LVCMOS15")),
-]
-
-_dock_lite_connectors = [
-    # Pmod
-    ("j2", "F15 D16 C9  L12 E15 E14 A9  J11"),
-    ("j6", "L8  P7  E10 D11 M6  R7  D10 F10"),
-    ("j7", "T6  T7  T8  T9  P6  R8  M6  P9"),
-    ("j8", "R16 P16 N16 L16 P15 N15 N14 L14"),
-
-    ("j1", {
-         7: "T5",
-         9: "T3",  10: "T5",
-        13: "E9",  14: "E8",
-        15: "T15", 16: "C13",
-        17: "T13", 18: "M11",
-        19: "B10", 20: "A13",
-        21: "H12", 22: "G11",
-        23: "H13", 24: "J12",
-        25: "K12", 26: "K13",
-        27: "L13", 28: "K11",
-        29: "R11", 30: "T12",
-        31: "P11", 32: "T11",
-        33: "G16", 34: "H15",
-        35: "H16", 36: "H14",
-        37: "K16", 38: "J15",
-        39: "K15", 40: "K14",
-    }),
-    ("j3", {
-         3: "N6",   4: "N7",
-         5: "B11",  6: "A12",
-         7: "L9",   8: "N8",
-         9: "R9",  10: "N9",
-        11: "A6",  12: "A7",
-        13: "C6",  14: "B8",
-        15: "C10",
-        17: "A11", 18: "C11",
-        19: "B12", 20: "C12",
-        21: "B13", 22: "A14",
-        23: "B14", 24: "A15",
-        25: "D15", 26: "E15",
-        27: "F16", 28: "F14",
-        29: "G15", 30: "G14",
-        31: "J14", 32: "J16",
-        33: "G12", 34: "F13",
-        35: "M14", 36: "M15",
-        37: "T14", 38: "R13",
-        39: "P13", 40: "R12",
-    })
 ]
 
 # Platform -----------------------------------------------------------------------------------------
@@ -283,12 +259,14 @@ class Platform(GowinPlatform):
             self.add_connector(_dock_lite_connectors)
 
         self.toolchain.options["use_mspi_as_gpio"]  = 1
+        self.toolchain.options["use_jtag_as_gpio"]  = 1
         self.toolchain.options["use_sspi_as_gpio"]  = 1
         self.toolchain.options["use_ready_as_gpio"] = 1
         self.toolchain.options["use_done_as_gpio"]  = 1
         self.toolchain.options["rw_check_on_ram"]   = 1
 
     def create_programmer(self, kit="openfpgaloader"):
+        # return OpenFPGALoader(cable="ft2232")
         return OpenFPGALoader(cable="ft232")
 
     def do_finalize(self, fragment):

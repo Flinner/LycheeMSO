@@ -1,0 +1,5 @@
+config,None,data_width,2
+config,None,depth,512
+config,None,samplerate,48000000
+signal,0,btn_n0,1
+signal,0,btn_n1,1

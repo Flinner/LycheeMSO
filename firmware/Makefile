@@ -1,7 +1,8 @@
-BUILD_DIR?=../build/sipeed_tang_primer_20k/software/
+BUILD_DIR?=../build/LycheeMSO_platform/software/
 
 include $(BUILD_DIR)/include/generated/variables.mak
 include $(SOC_DIRECTORY)/software/common.mak
+
 
 OBJECTS   = donut.o helloc.o crt0.o main.o
 ifdef WITH_CXX
